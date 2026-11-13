@@ -1,0 +1,10 @@
+<6>[   25.422957] hello1: loaded
+<6>[   25.424930] hello1: Hello, world!
+<6>[   25.424932] hello1: Hello, world!
+<6>[   25.424934] hello1: Hello, world!
+<6>[   25.424935] hello2: loaded, howmany = 3
+<6>[   25.439557] hello2: unloaded
+<6>[   25.459311] hello1: print 1 took 2705 ns
+<6>[   25.459317] hello1: print 2 took 1322 ns
+<6>[   25.459318] hello1: print 3 took 1002 ns
+<6>[   25.459320] hello1: unloaded, freed 3 events

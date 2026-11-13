@@ -1,0 +1,10 @@
+make -C /home/pahinets/.cache/ak5-kernel M=/home/pahinets/CA-Labs/lab5 modules
+make[1]: Entering directory '/home/pahinets/.cache/ak5-kernel'
+make[2]: Entering directory '/home/pahinets/CA-Labs/lab5'
+  CC [M]  hello1.o
+  MODPOST Module.symvers
+  LD [M]  hello1.ko
+  BTF [M] hello1.ko
+Skipping BTF generation for hello1.ko due to unavailability of vmlinux
+make[2]: Leaving directory '/home/pahinets/CA-Labs/lab5'
+make[1]: Leaving directory '/home/pahinets/.cache/ak5-kernel'

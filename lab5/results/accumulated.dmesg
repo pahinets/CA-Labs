@@ -1,0 +1,17 @@
+<4>[   24.856180] hello1: loading out-of-tree module taints kernel.
+<6>[   24.856576] hello1: loaded
+<6>[   24.860322] hello1: Hello, world!
+<6>[   24.860327] hello1: Hello, world!
+<6>[   24.860328] hello2: loaded, howmany = 2
+<6>[   24.874747] hello2: unloaded
+<6>[   24.895501] hello1: Hello, world!
+<6>[   24.895505] hello1: Hello, world!
+<6>[   24.895506] hello1: Hello, world!
+<6>[   24.895507] hello2: loaded, howmany = 3
+<6>[   24.902612] hello2: unloaded
+<6>[   24.934778] hello1: print 1 took 5892 ns
+<6>[   24.934782] hello1: print 2 took 1382 ns
+<6>[   24.934784] hello1: print 3 took 4258 ns
+<6>[   24.934786] hello1: print 4 took 1363 ns
+<6>[   24.934788] hello1: print 5 took 992 ns
+<6>[   24.934789] hello1: unloaded, freed 5 events

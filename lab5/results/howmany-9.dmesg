@@ -1,0 +1,23 @@
+<6>[   25.919867] hello1: loaded
+<4>[   25.922835] hello2: howmany = 9, continuing anyway
+<6>[   25.922840] hello1: Hello, world!
+<6>[   25.922842] hello1: Hello, world!
+<6>[   25.922843] hello1: Hello, world!
+<6>[   25.922844] hello1: Hello, world!
+<6>[   25.922846] hello1: Hello, world!
+<6>[   25.922847] hello1: Hello, world!
+<6>[   25.922848] hello1: Hello, world!
+<6>[   25.922849] hello1: Hello, world!
+<6>[   25.922850] hello1: Hello, world!
+<6>[   25.922851] hello2: loaded, howmany = 9
+<6>[   25.959556] hello2: unloaded
+<6>[   25.979360] hello1: print 1 took 1683 ns
+<6>[   25.979365] hello1: print 2 took 1012 ns
+<6>[   25.979367] hello1: print 3 took 1022 ns
+<6>[   25.979368] hello1: print 4 took 1112 ns
+<6>[   25.979370] hello1: print 5 took 972 ns
+<6>[   25.979371] hello1: print 6 took 1012 ns
+<6>[   25.979372] hello1: print 7 took 962 ns
+<6>[   25.979374] hello1: print 8 took 952 ns
+<6>[   25.979375] hello1: print 9 took 952 ns
+<6>[   25.979376] hello1: unloaded, freed 9 events

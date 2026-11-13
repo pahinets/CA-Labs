@@ -1,0 +1,535 @@
+test_accumulated_events (__main__.ModuleTests.test_accumulated_events) ... $ insmod ./hello1.ko
+
+[exit 0]
+$ insmod ./hello2.ko howmany=2
+
+[exit 0]
+$ rmmod hello2
+
+[exit 0]
+$ insmod ./hello2.ko howmany=3
+
+[exit 0]
+$ rmmod hello2
+
+[exit 0]
+$ rmmod hello1
+
+[exit 0]
+<4>[   24.856180] hello1: loading out-of-tree module taints kernel.
+<6>[   24.856576] hello1: loaded
+<6>[   24.860322] hello1: Hello, world!
+<6>[   24.860327] hello1: Hello, world!
+<6>[   24.860328] hello2: loaded, howmany = 2
+<6>[   24.874747] hello2: unloaded
+<6>[   24.895501] hello1: Hello, world!
+<6>[   24.895505] hello1: Hello, world!
+<6>[   24.895506] hello1: Hello, world!
+<6>[   24.895507] hello2: loaded, howmany = 3
+<6>[   24.902612] hello2: unloaded
+<6>[   24.934778] hello1: print 1 took 5892 ns
+<6>[   24.934782] hello1: print 2 took 1382 ns
+<6>[   24.934784] hello1: print 3 took 4258 ns
+<6>[   24.934786] hello1: print 4 took 1363 ns
+<6>[   24.934788] hello1: print 5 took 992 ns
+<6>[   24.934789] hello1: unloaded, freed 5 events
+ok
+test_default (__main__.ModuleTests.test_default) ... $ insmod ./hello1.ko
+
+[exit 0]
+$ insmod ./hello2.ko
+
+[exit 0]
+$ cat /sys/module/hello2/parameters/howmany
+1
+[exit 0]
+$ rmmod hello2
+
+[exit 0]
+$ rmmod hello1
+
+[exit 0]
+<6>[   24.982658] hello1: loaded
+<6>[   24.984784] hello1: Hello, world!
+<6>[   24.984786] hello2: loaded, howmany = 1
+<6>[   24.999969] hello2: unloaded
+<6>[   25.014995] hello1: print 1 took 2686 ns
+<6>[   25.014999] hello1: unloaded, freed 1 events
+ok
+test_dependency (__main__.ModuleTests.test_dependency) ... $ insmod ./hello2.ko
+insmod: ERROR: could not insert module ./hello2.ko: Unknown symbol in module
+[exit 1]
+<4>[   25.053576] hello2: Unknown symbol print_hello (err -2)
+$ insmod ./hello1.ko
+
+[exit 0]
+$ insmod ./hello2.ko howmany=3
+
+[exit 0]
+$ lsmod
+Module                  Size  Used by
+hello2                 12288  0
+hello1                 12288  1 hello2
+kvm_amd               110592  0
+kvm                  1007616  1 kvm_amd
+irqbypass              16384  1 kvm
+battery                20480  0
+ac                     16384  0
+sch_fq_codel           20480  1
+autofs4                45056  0
+br_netfilter           28672  0
+bridge                286720  1 br_netfilter
+stp                    12288  1 bridge
+llc                    12288  2 bridge,stp
+ip_tables              28672  0
+tun                    53248  0
+[exit 0]
+$ rmmod hello1
+rmmod: ERROR: Module hello1 is in use by: hello2
+[exit 1]
+$ rmmod hello2
+
+[exit 0]
+$ rmmod hello1
+
+[exit 0]
+ok
+test_metadata (__main__.ModuleTests.test_metadata) ... $ modinfo ./hello1.ko
+filename:       /home/pahinets/CA-Labs/lab5/./hello1.ko
+license:        Dual BSD/GPL
+description:    Lab 5: exported greeting and print duration list
+author:         Tovstopiat O.
+depends:        
+name:           hello1
+retpoline:      Y
+vermagic:       6.18.58.1-microsoft-standard-WSL2 SMP preempt mod_unload modversions 
+[exit 0]
+$ modinfo ./hello2.ko
+filename:       /home/pahinets/CA-Labs/lab5/./hello2.ko
+license:        Dual BSD/GPL
+description:    Lab 5: greeting client with a howmany parameter
+author:         Tovstopiat O.
+depends:        hello1
+name:           hello2
+retpoline:      Y
+vermagic:       6.18.58.1-microsoft-standard-WSL2 SMP preempt mod_unload modversions 
+parm:           howmany:Number of greetings (default 1, maximum 10) (uint)
+[exit 0]
+$ modinfo -F depends ./hello2.ko
+hello1
+[exit 0]
+$ modinfo -F parm ./hello2.ko
+howmany:Number of greetings (default 1, maximum 10) (uint)
+[exit 0]
+$ uname -r
+6.18.58.1-microsoft-standard-WSL2
+[exit 0]
+$ modinfo -F vermagic ./hello1.ko
+6.18.58.1-microsoft-standard-WSL2 SMP preempt mod_unload modversions 
+[exit 0]
+$ modinfo -F vermagic ./hello2.ko
+6.18.58.1-microsoft-standard-WSL2 SMP preempt mod_unload modversions 
+[exit 0]
+$ nm -u ./hello2.ko
+                 U __fentry__
+                 U __x86_return_thunk
+                 U _printk
+                 U param_ops_uint
+                 U print_hello
+[exit 0]
+$ nm ./hello1.ko
+0000000000000000 d __UNIQUE_ID___addressable_cleanup_module485
+0000000000000000 d __UNIQUE_ID___addressable_init_module484
+0000000000000052 r __UNIQUE_ID_modinfo480
+0000000000000070 r __UNIQUE_ID_modinfo480
+0000000000000088 r __UNIQUE_ID_modinfo480
+0000000000000015 r __UNIQUE_ID_modinfo481
+0000000000000067 r __UNIQUE_ID_modinfo481
+000000000000007c r __UNIQUE_ID_modinfo481
+0000000000000000 r __UNIQUE_ID_modinfo482
+0000000000000000 r ____versions
+0000000000000000 r __crc_print_hello
+                 U __fentry__
+                 U __kmalloc_cache_noprof
+0000000000000000 r __kstrtab_print_hello
+000000000000000c r __kstrtabns_print_hello
+0000000000000000 r __ksymtab_print_hello
+                 U __list_add_valid_or_report
+                 U __list_del_entry_valid_or_report
+0000000000000000 T __pfx_cleanup_module
+0000000000000000 t __pfx_hello1_exit
+0000000000000000 t __pfx_hello1_init
+0000000000000000 T __pfx_init_module
+0000000000000000 T __pfx_print_hello
+0000000000000000 D __this_module
+                 U __x86_return_thunk
+0000000000000018 r _note_18
+0000000000000000 r _note_19
+                 U _printk
+0000000000000010 T cleanup_module
+0000000000000010 t hello1_exit
+0000000000000010 t hello1_init
+0000000000000000 d hello_list
+0000000000000010 T init_module
+                 U kfree
+                 U kmalloc_caches
+                 U ktime_get
+0000000000000010 T print_hello
+[exit 0]
+ok
+test_parameter_cases (__main__.ModuleTests.test_parameter_cases) ... $ insmod ./hello1.ko
+
+[exit 0]
+$ insmod ./hello2.ko howmany=0
+
+[exit 0]
+$ cat /sys/module/hello2/parameters/howmany
+0
+[exit 0]
+$ rmmod hello2
+
+[exit 0]
+$ rmmod hello1
+
+[exit 0]
+<6>[   25.184469] hello1: loaded
+<4>[   25.186334] hello2: howmany = 0, continuing anyway
+<6>[   25.186337] hello2: loaded, howmany = 0
+<6>[   25.199631] hello2: unloaded
+<6>[   25.214942] hello1: unloaded, freed 0 events
+$ insmod ./hello1.ko
+
+[exit 0]
+$ insmod ./hello2.ko howmany=1
+
+[exit 0]
+$ cat /sys/module/hello2/parameters/howmany
+1
+[exit 0]
+$ rmmod hello2
+
+[exit 0]
+$ rmmod hello1
+
+[exit 0]
+<6>[   25.254765] hello1: loaded
+<6>[   25.256809] hello1: Hello, world!
+<6>[   25.256812] hello2: loaded, howmany = 1
+<6>[   25.275546] hello2: unloaded
+<6>[   25.291540] hello1: print 1 took 3356 ns
+<6>[   25.291546] hello1: unloaded, freed 1 events
+$ insmod ./hello1.ko
+
+[exit 0]
+$ insmod ./hello2.ko howmany=2
+
+[exit 0]
+$ cat /sys/module/hello2/parameters/howmany
+2
+[exit 0]
+$ rmmod hello2
+
+[exit 0]
+$ rmmod hello1
+
+[exit 0]
+<6>[   25.331240] hello1: loaded
+<6>[   25.333127] hello1: Hello, world!
+<6>[   25.333129] hello1: Hello, world!
+<6>[   25.333130] hello2: loaded, howmany = 2
+<6>[   25.359770] hello2: unloaded
+<6>[   25.374948] hello1: print 1 took 2585 ns
+<6>[   25.374953] hello1: print 2 took 1283 ns
+<6>[   25.374955] hello1: unloaded, freed 2 events
+$ insmod ./hello1.ko
+
+[exit 0]
+$ insmod ./hello2.ko howmany=3
+
+[exit 0]
+$ cat /sys/module/hello2/parameters/howmany
+3
+[exit 0]
+$ rmmod hello2
+
+[exit 0]
+$ rmmod hello1
+
+[exit 0]
+<6>[   25.422957] hello1: loaded
+<6>[   25.424930] hello1: Hello, world!
+<6>[   25.424932] hello1: Hello, world!
+<6>[   25.424934] hello1: Hello, world!
+<6>[   25.424935] hello2: loaded, howmany = 3
+<6>[   25.439557] hello2: unloaded
+<6>[   25.459311] hello1: print 1 took 2705 ns
+<6>[   25.459317] hello1: print 2 took 1322 ns
+<6>[   25.459318] hello1: print 3 took 1002 ns
+<6>[   25.459320] hello1: unloaded, freed 3 events
+$ insmod ./hello1.ko
+
+[exit 0]
+$ insmod ./hello2.ko howmany=4
+
+[exit 0]
+$ cat /sys/module/hello2/parameters/howmany
+4
+[exit 0]
+$ rmmod hello2
+
+[exit 0]
+$ rmmod hello1
+
+[exit 0]
+<6>[   25.505525] hello1: loaded
+<6>[   25.507322] hello1: Hello, world!
+<6>[   25.507325] hello1: Hello, world!
+<6>[   25.507326] hello1: Hello, world!
+<6>[   25.507327] hello1: Hello, world!
+<6>[   25.507328] hello2: loaded, howmany = 4
+<6>[   25.523707] hello2: unloaded
+<6>[   25.542953] hello1: print 1 took 2615 ns
+<6>[   25.542958] hello1: print 2 took 1252 ns
+<6>[   25.542960] hello1: print 3 took 1072 ns
+<6>[   25.542961] hello1: print 4 took 992 ns
+<6>[   25.542963] hello1: unloaded, freed 4 events
+$ insmod ./hello1.ko
+
+[exit 0]
+$ insmod ./hello2.ko howmany=5
+
+[exit 0]
+$ cat /sys/module/hello2/parameters/howmany
+5
+[exit 0]
+$ rmmod hello2
+
+[exit 0]
+$ rmmod hello1
+
+[exit 0]
+<6>[   25.593913] hello1: loaded
+<4>[   25.595824] hello2: howmany = 5, continuing anyway
+<6>[   25.595827] hello1: Hello, world!
+<6>[   25.595828] hello1: Hello, world!
+<6>[   25.595830] hello1: Hello, world!
+<6>[   25.595831] hello1: Hello, world!
+<6>[   25.595832] hello1: Hello, world!
+<6>[   25.595833] hello2: loaded, howmany = 5
+<6>[   25.611609] hello2: unloaded
+<6>[   25.627304] hello1: print 1 took 1293 ns
+<6>[   25.627310] hello1: print 2 took 1012 ns
+<6>[   25.627312] hello1: print 3 took 1002 ns
+<6>[   25.627313] hello1: print 4 took 952 ns
+<6>[   25.627315] hello1: print 5 took 972 ns
+<6>[   25.627316] hello1: unloaded, freed 5 events
+$ insmod ./hello1.ko
+
+[exit 0]
+$ insmod ./hello2.ko howmany=6
+
+[exit 0]
+$ cat /sys/module/hello2/parameters/howmany
+6
+[exit 0]
+$ rmmod hello2
+
+[exit 0]
+$ rmmod hello1
+
+[exit 0]
+<6>[   25.675134] hello1: loaded
+<4>[   25.676936] hello2: howmany = 6, continuing anyway
+<6>[   25.676939] hello1: Hello, world!
+<6>[   25.676940] hello1: Hello, world!
+<6>[   25.676941] hello1: Hello, world!
+<6>[   25.676942] hello1: Hello, world!
+<6>[   25.676943] hello1: Hello, world!
+<6>[   25.676945] hello1: Hello, world!
+<6>[   25.676945] hello2: loaded, howmany = 6
+<6>[   25.695573] hello2: unloaded
+<6>[   25.714984] hello1: print 1 took 1303 ns
+<6>[   25.714988] hello1: print 2 took 1022 ns
+<6>[   25.714990] hello1: print 3 took 972 ns
+<6>[   25.714991] hello1: print 4 took 1333 ns
+<6>[   25.714993] hello1: print 5 took 942 ns
+<6>[   25.714994] hello1: print 6 took 952 ns
+<6>[   25.714995] hello1: unloaded, freed 6 events
+$ insmod ./hello1.ko
+
+[exit 0]
+$ insmod ./hello2.ko howmany=7
+
+[exit 0]
+$ cat /sys/module/hello2/parameters/howmany
+7
+[exit 0]
+$ rmmod hello2
+
+[exit 0]
+$ rmmod hello1
+
+[exit 0]
+<6>[   25.763201] hello1: loaded
+<4>[   25.765040] hello2: howmany = 7, continuing anyway
+<6>[   25.765043] hello1: Hello, world!
+<6>[   25.765044] hello1: Hello, world!
+<6>[   25.765045] hello1: Hello, world!
+<6>[   25.765046] hello1: Hello, world!
+<6>[   25.765047] hello1: Hello, world!
+<6>[   25.765048] hello1: Hello, world!
+<6>[   25.765049] hello1: Hello, world!
+<6>[   25.765050] hello2: loaded, howmany = 7
+<6>[   25.787788] hello2: unloaded
+<6>[   25.806770] hello1: print 1 took 1302 ns
+<6>[   25.806775] hello1: print 2 took 992 ns
+<6>[   25.806777] hello1: print 3 took 952 ns
+<6>[   25.806778] hello1: print 4 took 942 ns
+<6>[   25.806780] hello1: print 5 took 952 ns
+<6>[   25.806782] hello1: print 6 took 1002 ns
+<6>[   25.806783] hello1: print 7 took 942 ns
+<6>[   25.806784] hello1: unloaded, freed 7 events
+$ insmod ./hello1.ko
+
+[exit 0]
+$ insmod ./hello2.ko howmany=8
+
+[exit 0]
+$ cat /sys/module/hello2/parameters/howmany
+8
+[exit 0]
+$ rmmod hello2
+
+[exit 0]
+$ rmmod hello1
+
+[exit 0]
+<6>[   25.850264] hello1: loaded
+<4>[   25.852671] hello2: howmany = 8, continuing anyway
+<6>[   25.852675] hello1: Hello, world!
+<6>[   25.852676] hello1: Hello, world!
+<6>[   25.852677] hello1: Hello, world!
+<6>[   25.852678] hello1: Hello, world!
+<6>[   25.852679] hello1: Hello, world!
+<6>[   25.852681] hello1: Hello, world!
+<6>[   25.852682] hello1: Hello, world!
+<6>[   25.852683] hello1: Hello, world!
+<6>[   25.852684] hello2: loaded, howmany = 8
+<6>[   25.871565] hello2: unloaded
+<6>[   25.886741] hello1: print 1 took 1303 ns
+<6>[   25.886746] hello1: print 2 took 1022 ns
+<6>[   25.886747] hello1: print 3 took 972 ns
+<6>[   25.886749] hello1: print 4 took 972 ns
+<6>[   25.886750] hello1: print 5 took 1012 ns
+<6>[   25.886751] hello1: print 6 took 1252 ns
+<6>[   25.886753] hello1: print 7 took 952 ns
+<6>[   25.886754] hello1: print 8 took 962 ns
+<6>[   25.886755] hello1: unloaded, freed 8 events
+$ insmod ./hello1.ko
+
+[exit 0]
+$ insmod ./hello2.ko howmany=9
+
+[exit 0]
+$ cat /sys/module/hello2/parameters/howmany
+9
+[exit 0]
+$ rmmod hello2
+
+[exit 0]
+$ rmmod hello1
+
+[exit 0]
+<6>[   25.919867] hello1: loaded
+<4>[   25.922835] hello2: howmany = 9, continuing anyway
+<6>[   25.922840] hello1: Hello, world!
+<6>[   25.922842] hello1: Hello, world!
+<6>[   25.922843] hello1: Hello, world!
+<6>[   25.922844] hello1: Hello, world!
+<6>[   25.922846] hello1: Hello, world!
+<6>[   25.922847] hello1: Hello, world!
+<6>[   25.922848] hello1: Hello, world!
+<6>[   25.922849] hello1: Hello, world!
+<6>[   25.922850] hello1: Hello, world!
+<6>[   25.922851] hello2: loaded, howmany = 9
+<6>[   25.959556] hello2: unloaded
+<6>[   25.979360] hello1: print 1 took 1683 ns
+<6>[   25.979365] hello1: print 2 took 1012 ns
+<6>[   25.979367] hello1: print 3 took 1022 ns
+<6>[   25.979368] hello1: print 4 took 1112 ns
+<6>[   25.979370] hello1: print 5 took 972 ns
+<6>[   25.979371] hello1: print 6 took 1012 ns
+<6>[   25.979372] hello1: print 7 took 962 ns
+<6>[   25.979374] hello1: print 8 took 952 ns
+<6>[   25.979375] hello1: print 9 took 952 ns
+<6>[   25.979376] hello1: unloaded, freed 9 events
+$ insmod ./hello1.ko
+
+[exit 0]
+$ insmod ./hello2.ko howmany=10
+
+[exit 0]
+$ cat /sys/module/hello2/parameters/howmany
+10
+[exit 0]
+$ rmmod hello2
+
+[exit 0]
+$ rmmod hello1
+
+[exit 0]
+<6>[   26.018540] hello1: loaded
+<4>[   26.020657] hello2: howmany = 10, continuing anyway
+<6>[   26.020660] hello1: Hello, world!
+<6>[   26.020662] hello1: Hello, world!
+<6>[   26.020663] hello1: Hello, world!
+<6>[   26.020664] hello1: Hello, world!
+<6>[   26.020665] hello1: Hello, world!
+<6>[   26.020666] hello1: Hello, world!
+<6>[   26.020667] hello1: Hello, world!
+<6>[   26.020668] hello1: Hello, world!
+<6>[   26.020669] hello1: Hello, world!
+<6>[   26.020671] hello1: Hello, world!
+<6>[   26.020672] hello2: loaded, howmany = 10
+<6>[   26.039680] hello2: unloaded
+<6>[   26.054804] hello1: print 1 took 1453 ns
+<6>[   26.054808] hello1: print 2 took 1092 ns
+<6>[   26.054810] hello1: print 3 took 992 ns
+<6>[   26.054811] hello1: print 4 took 1052 ns
+<6>[   26.054812] hello1: print 5 took 972 ns
+<6>[   26.054813] hello1: print 6 took 972 ns
+<6>[   26.054814] hello1: print 7 took 972 ns
+<6>[   26.054816] hello1: print 8 took 972 ns
+<6>[   26.054817] hello1: print 9 took 982 ns
+<6>[   26.054818] hello1: print 10 took 982 ns
+<6>[   26.054819] hello1: unloaded, freed 10 events
+$ insmod ./hello1.ko
+
+[exit 0]
+$ insmod ./hello2.ko howmany=11
+insmod: ERROR: could not insert module ./hello2.ko: Invalid parameters
+[exit 1]
+$ rmmod hello1
+
+[exit 0]
+<6>[   26.086575] hello1: loaded
+<3>[   26.088644] hello2: howmany = 11 is greater than 10, refusing to load
+<6>[   26.139564] hello1: unloaded, freed 0 events
+$ insmod ./hello1.ko
+
+[exit 0]
+$ insmod ./hello2.ko howmany=15
+insmod: ERROR: could not insert module ./hello2.ko: Invalid parameters
+[exit 1]
+$ rmmod hello1
+
+[exit 0]
+<6>[   26.188615] hello1: loaded
+<3>[   26.190671] hello2: howmany = 15 is greater than 10, refusing to load
+<6>[   26.263472] hello1: unloaded, freed 0 events
+ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 1.448s
+
+OK
