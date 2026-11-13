@@ -1,3 +1,0 @@
-<6>[   26.188615] hello1: loaded
-<3>[   26.190671] hello2: howmany = 15 is greater than 10, refusing to load
-<6>[   26.263472] hello1: unloaded, freed 0 events

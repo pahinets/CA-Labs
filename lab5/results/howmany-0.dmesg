@@ -1,5 +1,0 @@
-<6>[   25.184469] hello1: loaded
-<4>[   25.186334] hello2: howmany = 0, continuing anyway
-<6>[   25.186337] hello2: loaded, howmany = 0
-<6>[   25.199631] hello2: unloaded
-<6>[   25.214942] hello1: unloaded, freed 0 events
